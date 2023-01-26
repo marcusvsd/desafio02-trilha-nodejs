@@ -22,11 +22,49 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  // Complete aqui
+  const { user } = request;
+
+  let counter = 0;
+
+  for (let i = 0; i < user.length; i++) {
+    if (user[i].id) counter++;
+  }
+
+  if (user.pro === false && counter > 10 || user.pro === true) {
+    return response.status(200).json({error: "This user is elegible to create a todo!"});
+  } else {
+    return response.status(200).json({error: "This user isn\'t eligible to create a todo!"})
+  }
 }
 
 function checksTodoExists(request, response, next) {
-  // Complete aqui
+  const { username } = request.headers;
+
+  const { id } = request.params;
+
+  const userFind = users.find(user => user.username === username);
+  const userId = users.find(user => user.id == id)
+  const regexExp = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi;
+
+  const isAnUUID = regexExp.test(id);
+
+  if (isAnUUID === false) {
+    return response.status(400).json({error: "This isn\'t a valid UUID!"})
+  }
+
+  if (!userFind) {
+    return response.status(404).json({error: "User not found!"});
+  }
+
+  if (userId != id) {
+    return response.status(404).json({error: "User ID doesn\'t exists!"});
+  }
+
+  const { user } = request;
+
+  const todo = user.todos.find(todo => todo.id === id);
+
+  return response.json({"todo": todo, "username": username});
 }
 
 function findUserById(request, response, next) {
