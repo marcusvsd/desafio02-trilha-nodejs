@@ -14,6 +14,7 @@
  <a href="#sobre">Sobre</a> •
  <a href="#features">Features</a> •
  <a href="#rotas">Rotas</a> •
+ <a href="#especificação-dos-testes">Especificação dos testes</a> •
  <a href="#autor">Autor</a>
 </p>
 
