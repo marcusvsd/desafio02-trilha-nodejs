@@ -11,11 +11,12 @@
 </h3>
 
 <p align="center">
- <a href="#sobre">Sobre</a> •
- <a href="#features">Features</a> •
- <a href="#rotas">Rotas</a> •
- <a href="#especificação-dos-testes">Especificação dos testes</a> •
- <a href="#autor">Autor</a>
+ <a href="#-sobre">Sobre</a> •
+ <a href="#-features">Features</a> •
+ <a href="#-rotas">Rotas</a> •
+ <a href="#-middlewares-da-aplicação">Middlewares da Aplicação</a> •
+ <a href="#-especificação-dos-testes">Middlewares da Aplicação</a> •
+ <a href="#-autor">Autor</a>
 </p>
 
 ## 💻 Sobre
