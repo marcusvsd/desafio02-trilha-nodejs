@@ -12,11 +12,11 @@ const users = [];
 function checksExistsUserAccount(request, response, next) {
   const { username } = request.headers;
 
+  if (!username) return response.status(400).json({ error: "username is required!"})
+
   const user = users.find(user => user.username === username);
 
-  if (!user) {
-    return response.status(404).json({error: "User not found!"});
-  }
+  if (!user) return response.status(404).json({error: "user not found!"});
 
   request.user = user;
 }
@@ -24,51 +24,49 @@ function checksExistsUserAccount(request, response, next) {
 function checksCreateTodosUserAvailability(request, response, next) {
   const { user } = request;
 
-  let counter = 0;
-
-  for (let i = 0; i < user.length; i++) {
-    if (user[i].id) counter++;
-  }
-
-  if (user.pro === false && counter > 10 || user.pro === true) {
-    return response.status(200).json({error: "This user is elegible to create a todo!"});
+  if (!user.pro && user.todos.length < 10) {
+    return next();
+  } else if (user.pro) {
+    return next();
   } else {
-    return response.status(200).json({error: "This user isn\'t eligible to create a todo!"})
+    return response.status(403).json({error: "Todos\'s limits reached!"});
   }
 }
 
 function checksTodoExists(request, response, next) {
   const { username } = request.headers;
-
   const { id } = request.params;
 
-  const userFind = users.find(user => user.username === username);
-  const userId = users.find(user => user.id == id)
-  const regexExp = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi;
+  const user = users.find(user => user.username === username);
+  
+  if (!user) return response.status(404).json({ error: "user not found"});
 
-  const isAnUUID = regexExp.test(id);
-
-  if (isAnUUID === false) {
-    return response.status(400).json({error: "This isn\'t a valid UUID!"})
-  }
-
-  if (!userFind) {
-    return response.status(404).json({error: "User not found!"});
-  }
-
-  if (userId != id) {
-    return response.status(404).json({error: "User ID doesn\'t exists!"});
-  }
-
-  const { user } = request;
+  const checkUuidIsValid = validate(id);
+  
+  if (!checkUuidIsValid) return response.status(400).json({error: "ID is not valid!"});
 
   const todo = user.todos.find(todo => todo.id === id);
+  
+  if (!todo) return response.status(404).json({error: "todo not found"});
+  
+  request.todo = todo;
+  request.user = user;
 
-  return response.json({"todo": todo, "username": username});
+  return next();
 }
 
 function findUserById(request, response, next) {
-  // Complete aqui
+  const { id } = request.params;
+
+  if (!id) return response.status(400).json({ error: "id is required"});
+
+  const user = users.find((user) => user.id === id);
+  
+  if (!user) return response.status(404).json({ error: 'user not found' });
+
+  request.user = user;
+
+  return next();
 }
 
 app.post('/users', (request, response) => {
