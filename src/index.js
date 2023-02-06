@@ -12,13 +12,15 @@ const users = [];
 function checksExistsUserAccount(request, response, next) {
   const { username } = request.headers;
 
-  if (!username) return response.status(400).json({ error: "username is required!"})
+  if(!username) return response.status(400).json({error: "username is required"});
 
   const user = users.find(user => user.username === username);
-
-  if (!user) return response.status(404).json({error: "user not found!"});
+  
+  if (!user) return response.status(404).json({error: "user not found"});
 
   request.user = user;
+
+  return next();
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
@@ -29,7 +31,7 @@ function checksCreateTodosUserAvailability(request, response, next) {
   } else if (user.pro) {
     return next();
   } else {
-    return response.status(403).json({error: "Todos\'s limits reached!"});
+    return response.status(403).json({ error: "Todo\'s limit reached"});
   }
 }
 
@@ -37,17 +39,17 @@ function checksTodoExists(request, response, next) {
   const { username } = request.headers;
   const { id } = request.params;
 
-  const user = users.find(user => user.username === username);
-  
+  const user = users.find((user) => user.username === username);
+
   if (!user) return response.status(404).json({ error: "user not found"});
 
   const checkUuidIsValid = validate(id);
-  
-  if (!checkUuidIsValid) return response.status(400).json({error: "ID is not valid!"});
+
+  if (!checkUuidIsValid) return response.status(400).json({ error: "id invalid"});
 
   const todo = user.todos.find(todo => todo.id === id);
-  
-  if (!todo) return response.status(404).json({error: "todo not found"});
+
+  if (!todo) return response.status(404).json({ error: "todo not found"});
   
   request.todo = todo;
   request.user = user;
@@ -61,8 +63,8 @@ function findUserById(request, response, next) {
   if (!id) return response.status(400).json({ error: "id is required"});
 
   const user = users.find((user) => user.id === id);
-  
-  if (!user) return response.status(404).json({ error: 'user not found' });
+
+  if (!user) return response.status(404).json({ error: "user not found"});
 
   request.user = user;
 
